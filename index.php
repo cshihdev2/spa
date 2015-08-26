@@ -22,7 +22,14 @@ if ($_SERVER["REQUEST_METHOD"]=="POST"){
 		error_log($_POST["password"]);
 		$msg="selected Wifi is " . $_POST["selected_ssid"];
 		$msg .= "<br>password is " . $_POST["password"];
-		$form_submission=true;		
+		$form_submission=true;
+		$cmd = "sudo /home/pi/code/scripts/trigger_network_update.sh " . $selected_ssid . " " . $password ;
+		$network_return_code = shell_exec($cmd);
+		$msg .= "<br> command given was " . $cmd;
+		$msg .= "<br> network return code is " . $network_return_code;
+		$msg .= "HQ_2G is Jx9bn3Kjz";
+		$msg .= "RND is Jx8bn2Kjz";
+			
 	}
 }else{
 	$available_ssid=get_available_wifi_list();
@@ -40,12 +47,12 @@ function get_available_wifi_list(){
 	//echo "array output is " ;
 	//var_dump($arr);
 
-	$availble_ssid=array();
+	$available_ssid=array();
 	foreach ($arr as $value){
 		$new_value = trim($value);
 		$new_value = str_replace("ESSID:", "", $new_value);
 		$new_value = str_replace('"', '', $new_value);
-		if (!empty($new_value)){
+		if (!empty($new_value) && !in_array($new_value, $available_ssid)){
 			$available_ssid[]=$new_value;
 		}else{
 			//echo "found empty string";
